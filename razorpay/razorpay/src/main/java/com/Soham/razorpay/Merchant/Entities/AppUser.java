@@ -3,11 +3,17 @@ package com.Soham.razorpay.Merchant.Entities;
 
 import com.Soham.razorpay.Common.Enums.UserRole;
 import jakarta.persistence.*;
+import lombok.*;
 
 import java.util.UUID;
 
 @Entity
 @Table(name = "app_user")
+@Getter
+@Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class AppUser {
 
     @Id

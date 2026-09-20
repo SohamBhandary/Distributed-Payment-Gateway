@@ -3,11 +3,18 @@ package com.Soham.razorpay.Merchant.Entities;
 import com.Soham.razorpay.Common.Enums.BusinessType;
 import com.Soham.razorpay.Common.Enums.MerchantStatus;
 import jakarta.persistence.*;
+import lombok.*;
 
 import java.util.UUID;
 
 @Entity
 @Table(name = "merchant")
+@Getter
+@Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+
 public class Merchant {
 
     @Id
