@@ -1,5 +1,8 @@
 package com.Soham.razorpay.Common.Exception;
 
+import com.Soham.razorpay.Common.Exception.DuplicateResourceException;
+import com.Soham.razorpay.Common.Exception.ErrorResponse;
+import com.Soham.razorpay.Common.Exception.ResourceNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -9,16 +12,27 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(DuplicateResourceException.class)
-    public ResponseEntity<ErrorResponse> handleDuplicateResources(DuplicateResourceException ex) {
+    public ResponseEntity<ErrorResponse> handleDuplicateResources(
+            DuplicateResourceException ex) {
+
         return ResponseEntity.status(HttpStatus.CONFLICT)
-                .body(ErrorResponse.of(ex.getErrorCode(), ex.getMessage()));
+                .body(ErrorResponse.of(
+                        ex.getErrorCode(),
+                        ex.getMessage()
+                ));
     }
 
-    @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<ErrorResponse> handleNotFound(ResourceNotFoundException ex) {
-        String errorCode = ex.getResourceName().toUpperCase()+"_NOT_FOUND";
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleNotFound(
+            ResourceNotFoundException ex) {
+
+        String errorCode =
+                ex.getResourceName().toUpperCase() + "_NOT_FOUND";
+
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(ErrorResponse.of(errorCode, ex.getMessage()));
+                .body(ErrorResponse.of(
+                        errorCode,
+                        ex.getMessage()
+                ));
     }
-
 }
