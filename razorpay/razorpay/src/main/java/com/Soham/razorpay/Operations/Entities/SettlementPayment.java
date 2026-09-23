@@ -1,10 +1,11 @@
 package com.Soham.razorpay.Operations.Entities;
 
+import com.Soham.razorpay.Common.Entities.BaseEntity;
 import jakarta.persistence.*;
 
 @Entity
 @Table(name = "settlement_payment")
-public class SettlementPayment {
+public class SettlementPayment   {
 
     @EmbeddedId
     private SettlementPaymentId id;

@@ -7,6 +7,7 @@ import com.Soham.razorpay.Merchant.Dtos.Req.MerchantSignupRequest;
 import com.Soham.razorpay.Merchant.Dtos.Res.MerchantResponse;
 import com.Soham.razorpay.Merchant.Entities.AppUser;
 import com.Soham.razorpay.Merchant.Entities.Merchant;
+import com.Soham.razorpay.Merchant.Mappers.MerchantMapper;
 import com.Soham.razorpay.Merchant.Repository.AppUserRepository;
 import com.Soham.razorpay.Merchant.Repository.MerchantRepository;
 import com.Soham.razorpay.Merchant.Service.AuthService;
@@ -23,6 +24,7 @@ public class AuthServiceImple implements AuthService {
 
     private final AppUserRepository appUserRepository;
     private final MerchantRepository merchantRepository;
+    private final MerchantMapper merchantMapper;
     @Override
     @Transactional
     public MerchantResponse signup(MerchantSignupRequest request) {
@@ -32,13 +34,8 @@ public class AuthServiceImple implements AuthService {
                     "Merchant with email already exists: " + request.email());
         }
 
-        Merchant merchant = Merchant.builder()
-                .businessName(request.businessName())
-                .businessType(request.businessType())
-                .name(request.name())
-                .email(request.email())
-                .status(MerchantStatus.PENDING_KYC)
-                .build();
+        Merchant merchant = merchantMapper.toEntityFromSignUpRequest(request);
+        merchant.setStatus(MerchantStatus.PENDING_KYC);
         merchant = merchantRepository.save(merchant);
 
         AppUser appUser = AppUser.builder()
@@ -49,9 +46,7 @@ public class AuthServiceImple implements AuthService {
                 .build();
         appUserRepository.save(appUser);
 
-        return new MerchantResponse(merchant.getId(), merchant.getName(),
-                merchant.getEmail(), merchant.getBusinessName(),
-                merchant.getBusinessType(), merchant.getStatus());
+        return merchantMapper.toResponse(merchant);
     }
     }
 

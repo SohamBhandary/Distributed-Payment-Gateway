@@ -1,5 +1,6 @@
 package com.Soham.razorpay.vault.entities;
 
+import com.Soham.razorpay.Common.Entities.BaseEntity;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -7,7 +8,7 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "card_token")
-public class CardToken {
+public class CardToken extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

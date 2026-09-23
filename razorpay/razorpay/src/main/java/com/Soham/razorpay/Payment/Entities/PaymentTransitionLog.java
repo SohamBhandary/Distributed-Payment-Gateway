@@ -1,17 +1,26 @@
 package com.Soham.razorpay.Payment.Entities;
 
 
+import com.Soham.razorpay.Common.Entities.BaseEntity;
 import com.Soham.razorpay.Common.Enums.PaymentActor;
 import com.Soham.razorpay.Common.Enums.PaymentEvent;
 import com.Soham.razorpay.Common.Enums.PaymentStatus;
 import jakarta.persistence.*;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
-@Table(name = "payment_transition_log")
-public class PaymentTransitionLog {
+@Table(name = "payment_transition_log", indexes = {
+        @Index(name = "idx_payment_transition_log_payment_id", columnList = "payment_id")
+})
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+public class PaymentTransitionLog extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
