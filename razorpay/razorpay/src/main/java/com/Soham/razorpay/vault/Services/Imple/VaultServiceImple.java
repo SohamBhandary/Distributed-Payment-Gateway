@@ -2,8 +2,11 @@ package com.Soham.razorpay.vault.Services.Imple;
 
 import com.Soham.razorpay.Common.Entities.Money;
 import com.Soham.razorpay.Common.Enums.CardBrand;
+import com.Soham.razorpay.Common.Exception.ResourceNotFoundException;
 import com.Soham.razorpay.Common.Utils.RandomizerUtil;
+import com.Soham.razorpay.Payment.Processor.Dtos.PaymentProcessorRequest;
 import com.Soham.razorpay.Payment.Processor.Dtos.PaymentProcessorResponse;
+import com.Soham.razorpay.Payment.Processor.PaymentProcessorRouter;
 import com.Soham.razorpay.vault.Config.VaultEncryptionConfig;
 import com.Soham.razorpay.vault.Dtos.request.TokenizeRequest;
 import com.Soham.razorpay.vault.Dtos.response.TokenizeResponse;
@@ -22,6 +25,7 @@ import org.springframework.security.crypto.keygen.KeyGenerators;
 import org.springframework.stereotype.Service;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.UUID;
 
@@ -33,6 +37,7 @@ public class VaultServiceImple implements VaultService {
     private final CardTokenRepository cardTokenRepository;
     private final VaultCardRepository vaultCardRepository;
     private final BytesEncryptor dekEncrypter;
+    private final PaymentProcessorRouter paymentProcessorRouter;
     @Override
     public TokenizeResponse tokenize(TokenizeRequest request, UUID merchantId) {
         String lastFour = request.pan().substring(request.pan().length() - 4);
@@ -68,7 +73,33 @@ public class VaultServiceImple implements VaultService {
 
     @Override
     public PaymentProcessorResponse charge(UUID paymentId, String token, Money amount, Map<String, Object> methodDetails) {
-        return null;
+        CardToken cardToken = cardTokenRepository.findByTokenAndRevokedAtIsNull(token)
+                .orElseThrow(() -> new ResourceNotFoundException("CardToken", token));
+
+        VaultCard vaultCard = cardToken.getVaultCard();
+        byte[] panBytes = null;
+
+        try {
+            byte[] dek = dekEncrypter.decrypt(vaultCard.getEncryptedDek());
+            panBytes = VaultEncryptionConfig.panEncrypter(dek).decrypt(vaultCard.getEncryptedPan());
+
+            String pan = new String(panBytes, StandardCharsets.UTF_8);
+            String expiry = vaultCard.getExpiryMonth() + "/" + vaultCard.getExpiryYear();
+
+            PaymentProcessorRequest paymentProcessorRequest = PaymentProcessorRequest
+                    .card(paymentId, pan, expiry, amount, methodDetails);
+
+            PaymentProcessorResponse response = paymentProcessorRouter.charge(paymentProcessorRequest);
+
+            log.info("Vault charge registered, token={}****", token.substring(0, 4));
+
+            return response;
+        } catch (Exception e) {
+            log.warn("Vault charge failed, token={}****", token.substring(0, 4));
+            return new PaymentProcessorResponse.Failure("VAULT_CHARGE_FAILED", e.getMessage());
+        } finally {
+            if (panBytes != null) Arrays.fill(panBytes, (byte) 0);
+        }
     }
 
     private CardBrand detectBrand(String pan) {
