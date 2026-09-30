@@ -5,7 +5,9 @@ import com.Soham.razorpay.Common.Utils.RandomizerUtil;
 import com.Soham.razorpay.Payment.Processor.Dtos.PaymentProcessorRequest;
 import com.Soham.razorpay.Payment.Processor.Dtos.PaymentProcessorResponse;
 import com.Soham.razorpay.Payment.Processor.PaymentProcessor;
+import org.springframework.stereotype.Component;
 
+@Component
 public class NetBankingPaymentProcessor implements PaymentProcessor {
 
     @Override
@@ -13,7 +15,7 @@ public class NetBankingPaymentProcessor implements PaymentProcessor {
         final String BANK_CODE_FAIL = "BANK_CODE_FAIL";
 
         String bankCode = request.methodDetails() != null ?
-                request.methodDetails().get("BANK").toString() : null;
+                request.methodDetails().get("bank").toString() : null;
 
         // simulation
         if (BANK_CODE_FAIL.equals(bankCode)) {
