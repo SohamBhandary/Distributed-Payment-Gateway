@@ -1,6 +1,5 @@
 package com.Soham.razorpay.Merchant.Service.Imple;
 
-
 import com.Soham.razorpay.Common.Exception.ResourceNotFoundException;
 import com.Soham.razorpay.Common.Utils.RandomizerUtil;
 import com.Soham.razorpay.Merchant.Dtos.Req.CreateApiKeyRequest;
@@ -14,10 +13,9 @@ import com.Soham.razorpay.Merchant.Repository.MerchantRepository;
 import com.Soham.razorpay.Merchant.Service.ApiKeyService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.PostMapping;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -33,20 +31,22 @@ public class ApiKeyServiceImpl implements ApiKeyService {
     private final ApiKeyRepository apiKeyRepository;
     private final ApiKeyMapper apiKeyMapper;
 
+    // Explicitly use BCryptPasswordEncoder instance to guarantee matching hashes
+    private final BCryptPasswordEncoder BCRYPT = new BCryptPasswordEncoder();
+
     @Override
+    @Transactional // 1. CRITICAL: Added missing @Transactional
     public ApiKeyCreateResponse create(UUID merchantId, CreateApiKeyRequest request) {
         Merchant merchant = merchantRepository.findById(merchantId)
                 .orElseThrow(() -> new ResourceNotFoundException("merchant", merchantId));
 
-        String keyId = "rzp_"+request.environment().name().toLowerCase()+"_"+ RandomizerUtil.randomBase64(24);
+        String keyId = "rzp_" + request.environment().name().toLowerCase() + "_" + RandomizerUtil.randomBase64(24);
         String rawSecret = RandomizerUtil.randomBase64(40);
-//        a-z,A-Z,0-9,-,_
-//        a-z,0-9
 
         ApiKey apiKey = ApiKey.builder()
                 .merchant(merchant)
                 .keyId(keyId)
-                .keySecretHash(rawSecret) // TODO: encode with BcryptPasswordEncoder
+                .keySecretHash(BCRYPT.encode(rawSecret)) // 2. CRITICAL: Use BCRYPT encoder
                 .environment(request.environment())
                 .build();
 
@@ -68,50 +68,25 @@ public class ApiKeyServiceImpl implements ApiKeyService {
                 .orElseThrow(() -> new ResourceNotFoundException("ApiKey", keyId));
 
         key.setEnabled(false);
-
     }
 
     @Override
     @Transactional
     public ApiKeyCreateResponse rotate(UUID merchantId, UUID keyId) {
-
         ApiKey apiKey = apiKeyRepository.findById(keyId)
                 .filter(k -> k.getMerchant().getId().equals(merchantId))
                 .orElseThrow(() -> new ResourceNotFoundException("ApiKey", keyId));
 
-
-        if(!apiKey.isEnabled()) throw new RuntimeException("Cannot rotate a disabled key");
+        if (!apiKey.isEnabled()) throw new RuntimeException("Cannot rotate a disabled key");
 
         String newRawSecret = RandomizerUtil.randomBase64(40);
         apiKey.setPreviousSecretHash(apiKey.getKeySecretHash());
-        apiKey.setKeySecretHash(newRawSecret);  // TODO: encode with BcryptPasswordEncoder
+        apiKey.setKeySecretHash(BCRYPT.encode(newRawSecret));
         apiKey.setRotatedAt(LocalDateTime.now());
         apiKey.setGracePeriodExpiresAt(LocalDateTime.now().plusHours(24));
         apiKey = apiKeyRepository.save(apiKey);
 
         return new ApiKeyCreateResponse(apiKey.getId(), apiKey.getKeyId(),
                 newRawSecret, apiKey.getEnvironment());
-
     }
-
-
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
