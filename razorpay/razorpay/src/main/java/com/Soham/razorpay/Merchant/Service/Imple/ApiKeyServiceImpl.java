@@ -2,6 +2,7 @@ package com.Soham.razorpay.Merchant.Service.Imple;
 
 import com.Soham.razorpay.Common.Exception.ResourceNotFoundException;
 import com.Soham.razorpay.Common.Utils.RandomizerUtil;
+import com.Soham.razorpay.Merchant.Cache.ApiKeyCache;
 import com.Soham.razorpay.Merchant.Dtos.Req.CreateApiKeyRequest;
 import com.Soham.razorpay.Merchant.Dtos.Res.ApiKeyCreateResponse;
 import com.Soham.razorpay.Merchant.Dtos.Res.ApiKeyResponse;
@@ -33,6 +34,9 @@ public class ApiKeyServiceImpl implements ApiKeyService {
 
     // Explicitly use BCryptPasswordEncoder instance to guarantee matching hashes
     private final BCryptPasswordEncoder BCRYPT = new BCryptPasswordEncoder();
+    private final ApiKeyCache apiKeyCache;
+
+
 
     @Override
     @Transactional // 1. CRITICAL: Added missing @Transactional
@@ -68,6 +72,7 @@ public class ApiKeyServiceImpl implements ApiKeyService {
                 .orElseThrow(() -> new ResourceNotFoundException("ApiKey", keyId));
 
         key.setEnabled(false);
+        apiKeyCache.evict(key.getKeyId());
     }
 
     @Override
@@ -85,6 +90,8 @@ public class ApiKeyServiceImpl implements ApiKeyService {
         apiKey.setRotatedAt(LocalDateTime.now());
         apiKey.setGracePeriodExpiresAt(LocalDateTime.now().plusHours(24));
         apiKey = apiKeyRepository.save(apiKey);
+
+        apiKeyCache.evict(apiKey.getKeyId());
 
         return new ApiKeyCreateResponse(apiKey.getId(), apiKey.getKeyId(),
                 newRawSecret, apiKey.getEnvironment());
