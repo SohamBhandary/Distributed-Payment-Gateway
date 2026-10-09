@@ -1,5 +1,6 @@
 package com.Soham.razorpay.Merchant.Security;
 
+import com.Soham.razorpay.Idempotency.IdempotencyFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,8 +25,10 @@ public class WebSecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final ApiKeyAuthenticationFilter apiKeyAuthenticationFilter;
+    private final IdempotencyFilter idempotencyFilter;
 
     @Bean
+    @Order(1)
     public SecurityFilterChain jwtChain(HttpSecurity http) {
         return http
                 .securityMatcher(JWT_ROUTES)
@@ -36,7 +39,10 @@ public class WebSecurityConfig {
                         .requestMatchers("/v1/auth/signup", "/v1/auth/login").permitAll()
                         .anyRequest().authenticated()
                 )
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(
+                        jwtAuthenticationFilter,
+                        UsernamePasswordAuthenticationFilter.class
+                )
                 .build();
     }
 
@@ -52,7 +58,14 @@ public class WebSecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .anyRequest().authenticated()
                 )
-                .addFilterBefore(apiKeyAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(
+                        apiKeyAuthenticationFilter,
+                        UsernamePasswordAuthenticationFilter.class
+                )
+                .addFilterAfter(
+                        idempotencyFilter,
+                        ApiKeyAuthenticationFilter.class
+                )
                 .build();
     }
 
