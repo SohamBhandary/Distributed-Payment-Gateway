@@ -33,7 +33,7 @@ public class OutboxPoller {
 
         for (OutboxEvent event : pendingEvents) {
             try {
-                String topic = kafkaProperties.topicFor(event.getAggregateType());
+                String topic = kafkaProperties.topicFor(event.getAggregateType()); // topic recvived
                 String key = extractMerchantId(event.getPayload());
 
                 Map<String, Object> envelope = Map.of(
