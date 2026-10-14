@@ -23,7 +23,7 @@
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
-      <module name="razorpay" options="-parameters" />
+      <module name="razorpay" options="-parameters -parameters" />
       <module name="razorpay.main" options="-parameters" />
       <module name="razorpay.test" options="-parameters" />
     </option>

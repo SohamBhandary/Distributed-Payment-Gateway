@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2026-10-03T11:25:08+0530",
+    date = "2026-10-12T16:46:06+0530",
     comments = "version: 1.6.3, compiler: javac, environment: Java 23.0.2 (Oracle Corporation)"
 )
 @Component
@@ -27,6 +27,7 @@ public class OrderMapperImpl implements OrderMapper {
 
         UUID id = null;
         UUID merchantId = null;
+        UUID customerId = null;
         String receipt = null;
         Money amount = null;
         Integer attempts = null;
@@ -36,6 +37,7 @@ public class OrderMapperImpl implements OrderMapper {
 
         id = orderRecord.getId();
         merchantId = orderRecord.getMerchantId();
+        customerId = orderRecord.getCustomerId();
         receipt = orderRecord.getReceipt();
         amount = orderRecord.getAmount();
         attempts = orderRecord.getAttempts();
@@ -48,7 +50,7 @@ public class OrderMapperImpl implements OrderMapper {
 
         OrderStatus status = null;
 
-        OrderResponse orderResponse = new OrderResponse( id, merchantId, receipt, amount, status, attempts, notes, expiresAt, createdAt );
+        OrderResponse orderResponse = new OrderResponse( id, merchantId, customerId, receipt, amount, status, attempts, notes, expiresAt, createdAt );
 
         return orderResponse;
     }

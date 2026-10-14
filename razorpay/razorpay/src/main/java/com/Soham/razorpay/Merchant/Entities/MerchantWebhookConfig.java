@@ -31,7 +31,7 @@ public class MerchantWebhookConfig extends BaseEntity {
     private String targetUrl; //www.zara.com/webhook/success
 
     @Column(length = 255)
-    private String webhookSecretHash;
+    private String webhookSecret;
 
     @Column(nullable = false)
     private Boolean enabled = true;
