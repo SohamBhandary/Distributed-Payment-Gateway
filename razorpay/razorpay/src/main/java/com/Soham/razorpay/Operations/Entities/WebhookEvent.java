@@ -3,6 +3,7 @@ package com.Soham.razorpay.Operations.Entities;
 import com.Soham.razorpay.Common.Entities.BaseEntity;
 import com.Soham.razorpay.Common.Enums.WebhookEventStatus;
 import jakarta.persistence.*;
+import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
@@ -12,6 +13,11 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "webhook_event")
+@Builder
+@Getter
+@Setter
+@AllArgsConstructor
+@RequiredArgsConstructor
 public class WebhookEvent  extends BaseEntity {
 
     @Id
