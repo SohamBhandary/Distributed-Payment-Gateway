@@ -13,8 +13,8 @@ import com.Soham.razorpay.Merchant.Mappers.WebhookConfigMapper;
 import com.Soham.razorpay.Merchant.Repository.MerchantRepository;
 import com.Soham.razorpay.Merchant.Repository.WebhookConfigRepository;
 import com.Soham.razorpay.Merchant.Service.WebhookConfigService;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.crypto.encrypt.BytesEncryptor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
-@RequiredArgsConstructor
 @Slf4j
 public class WebhookConfigServiceImpl implements WebhookConfigService, MerchantWebhookApi {
 
@@ -33,6 +32,18 @@ public class WebhookConfigServiceImpl implements WebhookConfigService, MerchantW
     private final WebhookConfigRepository merchantWebhookConfigRepository;
     private final BytesEncryptor bytesEncryptor;
     private final WebhookConfigMapper webhookConfigMapper;
+
+    public WebhookConfigServiceImpl(
+            MerchantRepository merchantRepository,
+            WebhookConfigRepository merchantWebhookConfigRepository,
+            @Qualifier("masterKeyEncryptor") BytesEncryptor bytesEncryptor,
+            WebhookConfigMapper webhookConfigMapper
+    ) {
+        this.merchantRepository = merchantRepository;
+        this.merchantWebhookConfigRepository = merchantWebhookConfigRepository;
+        this.bytesEncryptor = bytesEncryptor;
+        this.webhookConfigMapper = webhookConfigMapper;
+    }
 
     @Override
     public WebhookConfigResponse create(UUID merchantId, UpdateWebhookConfigRequest request) {
@@ -99,26 +110,11 @@ public class WebhookConfigServiceImpl implements WebhookConfigService, MerchantW
         return merchantWebhookConfigRepository.findByMerchant_IdAndEnabledTrue(merchantId).stream()
                 .filter(config -> config.isSubscribedTo(eventType))
                 .map(config -> {
-                    byte[] decryptedSecretBytes = bytesEncryptor.decrypt(config.getWebhookSecret().getBytes(StandardCharsets.UTF_8));
+                    byte[] cipherBytes = Base64.getDecoder().decode(config.getWebhookSecret());
+                    byte[] decryptedSecretBytes = bytesEncryptor.decrypt(cipherBytes);
                     return new WebhookTarget(config.getId(), config.getTargetUrl(),
                             new String(decryptedSecretBytes, StandardCharsets.UTF_8));
                 })
                 .toList();
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

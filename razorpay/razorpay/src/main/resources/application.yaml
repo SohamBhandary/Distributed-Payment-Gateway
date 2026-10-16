@@ -8,6 +8,7 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
+
     show-sql: true
     properties:
       hibernate:
@@ -39,6 +40,8 @@ spring:
         spring.json.trusted.packages: "com.Soham.razorpay.*"
         spring.json.use.type.headers: false
         spring.json.value.default.type: java.util.LinkedHashMap
+      listener:
+        ack-mode: manual
 vault:
   master-key: NqcfbJG1zkOfBsNF/wPmlLA7aaOvh9RCHTYYgY/9A2Q=
 
@@ -68,7 +71,7 @@ app:
     method: fixed
     use-case:
       api-key:
-        requests-per-minute: 2
+        requests-per-minute: 200
 
   kafka:
     topics:

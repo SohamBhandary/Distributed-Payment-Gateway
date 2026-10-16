@@ -31,6 +31,7 @@ public class WebhookKafkaConsumer {
     private final SignerUtil signerUtil;
     private final WebhookEventRepository webhookEventRepository;
     private final WebhookRetryQueue retryQueue;
+    private final WebhookDlqRecorder dlqRecorder;
 
     @KafkaListener(topics = {
             "${app.kafka.topics.payments:payments.events}",

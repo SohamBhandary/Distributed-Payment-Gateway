@@ -25,7 +25,7 @@ public class OutboxPoller {
     private final KafkaProperties kafkaProperties;
     private final OutboxResultHandler outboxResultHandler;
 
-    @Scheduled(fixedDelay = 5000)
+    @Scheduled(fixedDelay = 60000)
     public void poll() {
 
         List<OutboxEvent> pendingEvents = outboxEventRepository
