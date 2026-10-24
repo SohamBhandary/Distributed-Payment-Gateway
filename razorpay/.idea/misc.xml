@@ -5,6 +5,11 @@
     <option name="originalFiles">
       <list>
         <option value="$PROJECT_DIR$/razorpay/pom.xml" />
+        <option value="$PROJECT_DIR$/common-lib/pom.xml" />
+        <option value="$PROJECT_DIR$/merchant-service/pom.xml" />
+        <option value="$PROJECT_DIR$/payment-service/pom.xml" />
+        <option value="$PROJECT_DIR$/operations-service/pom.xml" />
+        <option value="$PROJECT_DIR$/vault-service/pom.xml" />
       </list>
     </option>
   </component>
