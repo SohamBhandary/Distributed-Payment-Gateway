@@ -1,6 +1,6 @@
-util.com.soham.razorpay.common_lib.SharedSecurityAutoConfiguration
-config.com.soham.razorpay.common_lib.SharedKafkaAutoConfiguration
-web.com.soham.razorpay.common_lib.SharedWebFilterAutoConfiguration
-idempotency.com.soham.razorpay.common_lib.SharedResilienceAutoConfiguration
-audit.com.soham.razorpay.common_lib.SharedAuditAutoConfiguration
-exception.com.soham.razorpay.common_lib.SharedExceptionAutoConfiguration
+com.soham.razorpay.common_lib.util.SharedSecurityAutoConfiguration
+com.soham.razorpay.common_lib.config.SharedKafkaAutoConfiguration
+com.soham.razorpay.common_lib.web.SharedWebFilterAutoConfiguration
+com.soham.razorpay.common_lib.idempotency.SharedResilienceAutoConfiguration
+com.soham.razorpay.common_lib.audit.SharedAuditAutoConfiguration
+com.soham.razorpay.common_lib.exception.SharedExceptionAutoConfiguration

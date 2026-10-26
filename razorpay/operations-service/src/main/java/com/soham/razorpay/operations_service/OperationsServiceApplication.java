@@ -10,7 +10,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @SpringBootApplication
 @EnableScheduling
 @EnableFeignClients
-@EnableSchedulerLock(defaultLockAtMostFor = "10m")
+//@EnableSchedulerLock(defaultLockAtMostFor = "10m")
 public class OperationsServiceApplication {
 
     public static void main(String[] args) {

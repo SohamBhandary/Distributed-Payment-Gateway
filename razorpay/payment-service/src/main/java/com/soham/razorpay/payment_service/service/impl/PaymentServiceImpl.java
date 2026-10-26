@@ -38,7 +38,7 @@ public class PaymentServiceImpl implements PaymentService {
     private final PaymentMapper paymentMapper;
     private final PaymentTransitionService paymentTransitionService;
     private final OutboxEventPublisher eventPublisher;
-    private final PaymentAuthorizationRecorder paymentAuthorizationRecorder;
+
 
     @Override
     public PaymentResponse initiate(UUID merchantId, PaymentInitRequest request) {

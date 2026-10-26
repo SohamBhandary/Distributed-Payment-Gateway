@@ -21,8 +21,7 @@ public class CardPaymentAdapter implements PaymentAdapter {
     private final VaultServiceClient vaultServiceClient;
 
     @Override
-    @CircuitBreaker(name = "vault-service")
-    @Retry(name = "vault-service")
+
     public PaymentResult initiate(PaymentRequest request) {
         String token = (String) request.methodDetails().get("token");
 

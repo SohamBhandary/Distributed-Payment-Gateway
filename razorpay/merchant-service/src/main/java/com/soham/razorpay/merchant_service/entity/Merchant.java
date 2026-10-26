@@ -2,6 +2,7 @@ package com.soham.razorpay.merchant_service.entity;
 
 
 import com.soham.razorpay.common_lib.entity.BaseEntity;
+import com.soham.razorpay.common_lib.enums.BusinessType;
 import com.soham.razorpay.common_lib.enums.MerchantStatus;
 import jakarta.persistence.*;
 import lombok.*;
