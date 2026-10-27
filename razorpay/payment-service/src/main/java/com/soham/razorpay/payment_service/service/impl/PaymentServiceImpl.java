@@ -2,7 +2,9 @@ package com.soham.razorpay.payment_service.service.impl;
 
 
 import com.soham.razorpay.common_lib.enums.EventAggregateType;
+import com.soham.razorpay.common_lib.enums.OrderStatus;
 import com.soham.razorpay.common_lib.enums.PaymentEvent;
+import com.soham.razorpay.common_lib.enums.PaymentStatus;
 import com.soham.razorpay.common_lib.exception.ResourceNotFoundException;
 import com.soham.razorpay.payment_service.dto.request.PaymentInitRequest;
 import com.soham.razorpay.payment_service.dto.response.PaymentResponse;
@@ -38,6 +40,7 @@ public class PaymentServiceImpl implements PaymentService {
     private final PaymentMapper paymentMapper;
     private final PaymentTransitionService paymentTransitionService;
     private final OutboxEventPublisher eventPublisher;
+    private final PaymentAuthorizationRecorder paymentAuthorizationRecorder;
 
 
     @Override

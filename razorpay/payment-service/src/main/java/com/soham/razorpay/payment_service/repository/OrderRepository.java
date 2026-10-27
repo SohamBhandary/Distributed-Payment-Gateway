@@ -15,7 +15,7 @@ public interface OrderRepository extends JpaRepository<OrderRecord, UUID> {
 
     Optional<OrderRecord> findByIdAndMerchantId(UUID orderId, UUID merchantId);
 
-    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Lock(LockModeType.PESSIMISTIC_WRITE) // no tnx can read or write
     @Query("select o from OrderRecord o where o.id = :uuid and o.merchantId = :merchantId")
     Optional<OrderRecord> findByIdAndMerchantIdForUpdate(UUID uuid, UUID merchantId);
 }
