@@ -32,7 +32,7 @@ import java.util.concurrent.TimeUnit;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class VaultServiceImpl implements VaultService {
+public class gVaultServiceImpl implements VaultService {
 
     private final CardTokenRepository cardTokenRepository;
     private final VaultCardRepository vaultCardRepository;
