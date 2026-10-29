@@ -1,40 +1,37 @@
 package com.soham.razorpay.payment_service.processor.strategy;
 
-
 import com.soham.razorpay.common_lib.dto.PaymentProcessorRequest;
 import com.soham.razorpay.common_lib.dto.PaymentProcessorResponse;
 import com.soham.razorpay.common_lib.util.RandomizerUtil;
-import io.github.resilience4j.bulkhead.annotation.Bulkhead;
+import com.soham.razorpay.payment_service.processor.PaymentProcessor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
-import java.util.concurrent.CompletableFuture;
-
 @Component
 @Slf4j
-public class CardPaymentProcessor {
+public class CardPaymentProcessor implements PaymentProcessor {
 
     public static final String PAN_CARD_DECLINED = "4000000000000002";
     public static final String PAN_CARD_EXPIRED = "4000000000000069";
 
-    @Bulkhead(name = "vault-card-processor", type = Bulkhead.Type.THREADPOOL)
-    public CompletableFuture<PaymentProcessorResponse> charge(PaymentProcessorRequest request) {
+    @Override
+    public PaymentProcessorResponse charge(PaymentProcessorRequest request) {
 
         String pan = request.pan();
 
         if (PAN_CARD_DECLINED.equals(pan)) {
             log.warn("Card declined");
-            return CompletableFuture.completedFuture(new PaymentProcessorResponse.Failure("CARD_DECLINED", "Card declined by bank"));
+            return new PaymentProcessorResponse.Failure("CARD_DECLINED", "Card declined by bank");
         }
 
         if (PAN_CARD_EXPIRED.equals(pan)) {
             log.warn("Pan card has expired");
-            return CompletableFuture.completedFuture(new PaymentProcessorResponse.Failure("CARD_EXPIRED", "Card has expired"));
+            return new PaymentProcessorResponse.Failure("CARD_EXPIRED", "Card has expired");
         }
 
-        String processorRef = "CARD_PROCESSOR_"+ RandomizerUtil.randomBase64(16);
+        String processorRef = "CARD_PROCESSOR_" + RandomizerUtil.randomBase64(16);
 
-        return CompletableFuture.completedFuture(new PaymentProcessorResponse.Pending(processorRef));
+        return new PaymentProcessorResponse.Pending(processorRef);
 
     }
 }
